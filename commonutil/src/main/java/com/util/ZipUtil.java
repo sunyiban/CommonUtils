@@ -33,10 +33,10 @@ public class ZipUtil {
 			File[] files = file.listFiles();
 			for (File f : files) {
 				if (f.isDirectory()) {
-					System.out.println(f.getName());
+					System.out.println(f.getAbsolutePath() + ":" + f.getPath());
 					listFileDirecotry(f);
 				} else {
-					System.out.println(f.getName());
+					System.out.println(f.getAbsolutePath() + ":" + f.getPath());
 				}
 			}
 		}
@@ -58,6 +58,10 @@ public class ZipUtil {
 	public static File zipSingleFile(File file, String fileName) {
 		if (file == null || !file.exists()) {
 			return null;
+		}
+
+		if (file.isDirectory()) {
+			throw new RuntimeException("不是一个文件");
 		}
 
 		File zipedFile = null;
@@ -156,16 +160,83 @@ public class ZipUtil {
 		return zipedFile;
 	}
 
+	public static File zipFile(File file, String fileName) throws Exception {
+		if (file == null) {
+			return null;
+		}
+
+		if (fileName == null || fileName.length() < 1 || !fileName.endsWith(".zip")) {
+			fileName = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf(".")) + ".zip";
+		}
+
+		if (!file.isDirectory()) {
+			return zipSingleFile(file, fileName);
+		}
+
+		File zipFile = new File(fileName);
+		ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile));
+		writeToZipStream(file, zos, "");
+
+		return zipFile;
+	}
+
+	/**
+	 * 这个方法将文件流写入zip
+	 *
+	 * @author sunyiban
+	 * @date 2018/9/7 11:27
+	 * @param file 需要写入的文件
+	 * @param zos zip流
+	 * @param fileName 文件路径绝对路径
+	 * @return void
+	 */
+	private static void writeToZipStream(File file, ZipOutputStream zos, String fileName) {
+		BufferedInputStream bis = null;
+
+		try {
+			File[] files = file.listFiles();
+			for (File f : files) {
+				if (f.isDirectory()) {
+					writeToZipStream(f, zos, "");
+				} else {
+					bis = new BufferedInputStream(new FileInputStream(file));
+					ZipEntry zipEntry = new ZipEntry(file.getAbsolutePath());
+					byte[] readByte = new byte[1024];
+					int len;
+					while((len = bis.read(readByte)) > 0) {
+						zos.write(readByte, 0, len);
+					}
+				}
+			}
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (bis != null) {
+				try {
+					bis.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+	}
+
 
 	public static void main(String[] args) throws Exception {
-//		listFileDirecotry(new File("E:/workspace"));
-		zipSingleFile(new File("E:/t.png"), "E:/t.zip");
+		listFileDirecotry(new File("E:/workspace"));
+//		zipSingleFile(new File("E:/t.png"), "E:/t.zip");
 
 		/*List<File> listFile = new ArrayList<File>();
 		listFile.add(new File("E:/test.pdf"));
 		listFile.add(new File("E:/test1.pdf"));
 		listFile.add(new File("E:/test2.pdf"));
 		zipFileList(listFile, "E:/test.zip");*/
+
+//		zipFile(new File("E:/workspace"), "E:/ttt.zip");
 	}
 
 }
