@@ -1,5 +1,7 @@
 package com.util.encode;
 
+import org.apache.commons.codec.binary.Base64;
+
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
@@ -24,7 +26,7 @@ public class AESCode {
      * @param data
      * @return java.lang.String
      */
-    public static byte[] encrypt(String key, String data) {
+    public static String encrypt(String key, String data) {
         try {
             // 创建AES的key生产者
             KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
@@ -43,7 +45,7 @@ public class AESCode {
             cipher.init(Cipher.ENCRYPT_MODE, aesKey);
             // 加密
             byte[] result = cipher.doFinal(byteContent);
-            return result;
+            return parseByte2HexStr(result);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (NoSuchPaddingException e) {
@@ -92,27 +94,52 @@ public class AESCode {
         return null;
     }
 
-    public static void main(String[] args) {
-        /*String word = "你好啊，告诉你一个秘密";
-        byte[] encrypt = encrypt("sun", word);
+    /**
+     * 将二进制转换成16进制
+     *
+     * @param buf
+     * @return
+     */
+    public static String parseByte2HexStr(byte buf[]) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < buf.length; i++) {
+            String hex = Integer.toHexString(buf[i] & 0xFF);
+            if (hex.length() == 1) {
+                hex = '0' + hex;
+            }
+            sb.append(hex.toUpperCase());
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 将16进制转换为二进制
+     *
+     * @param hexStr
+     * @return
+     */
+    public static byte[] parseHexStr2Byte(String hexStr) {
+        if (hexStr.length() < 1) {
+            return null;
+        }
+        byte[] result = new byte[hexStr.length() / 2];
+        for (int i = 0; i < hexStr.length() / 2; i++) {
+            int high = Integer.parseInt(hexStr.substring(i * 2, i * 2 + 1), 16);
+            int low = Integer.parseInt(hexStr.substring(i * 2 + 1, i * 2 + 2), 16);
+            result[i] = (byte) (high * 16 + low);
+        }
+        return result;
+    }
+
+
+    public static void main(String[] args) throws Exception {
+        String word = "你好啊，告诉你一个秘密";
+        String encrypt = encrypt("sun", word);
         System.out.println("加密后：");
-        System.out.println(new String(encrypt));
+        System.out.println(encrypt);
 
-        for (byte a : encrypt) {
-            System.out.println(a);
-        }
-
-        String decrypt = decrypt("sun", encrypt);
-        System.out.println("解密后：" + decrypt);*/
-
-        byte[] b = new byte[]{11,23,-17,-65,-67,37,20};
-        String a = new String(b);
-        System.out.println(a);
-
-        System.out.println("===============================");
-        for(byte c : a.getBytes()) {
-            System.out.print(c + ",");
-        }
+        String decrypt = decrypt("sun", parseHexStr2Byte(encrypt));
+        System.out.println("解密后：" + decrypt);
     }
 
 }
