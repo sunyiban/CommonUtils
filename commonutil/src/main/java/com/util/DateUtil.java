@@ -2,7 +2,7 @@ package com.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.*;
 
 /**
  * @author sunyiban
@@ -137,5 +137,93 @@ public class DateUtil {
         }
         return 0;
     }
+
+	public static void main(String[] args) {
+    	Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DAY_OF_MONTH, 1);
+		System.out.println(new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD).format(cal.getTime()));
+
+		cal.add(Calendar.DAY_OF_MONTH, 50);
+		System.out.println(new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD).format(cal.getTime()));
+
+		cal.add(Calendar.MONTH, 3);
+		System.out.println(new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD).format(cal.getTime()));
+
+		cal.add(Calendar.MONTH, 2);
+		System.out.println(new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD).format(cal.getTime()));
+
+
+		//↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓这是一个关于iterater删除元素原理的验证↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+		List<String> list = new ArrayList<String>();
+		list.add("123");
+		list.add("234");
+		list.add("345");
+		list.add("456");
+		Iterator<String> iterator = list.iterator();
+		while(iterator.hasNext()) {
+			String a = iterator.next();
+			System.out.println(a + ":" + list.indexOf(a));
+			/**
+			 * 源码解析：
+			 *      这是重写的ITERATOR删除方法
+			 * 		public void remove() {
+			 *             if (this.lastRet < 0) {
+			 *                 throw new IllegalStateException();
+			 *             } else {
+			 *                 this.checkForComodification();
+			 *
+			 *                 try {
+			 *                 		第一步，这里调用了ARRAYLIST的删除方法
+			 *                     ArrayList.this.remove(this.lastRet);
+			 *                     第二步，将删除的元素的位置给了游标，这里就是为什么iteratre方法能准确删除元素的关键
+			 *                     相对于普通的for循环，我们删除后并没有将指针定位，所以普通的for循环内删除就会出现135。。
+			 *                     这种隔代删除的情况
+			 *                     this.cursor = this.lastRet;
+			 *                     第三步，重置了删除的变量
+			 *                     this.lastRet = -1;
+			 *                     第四步，将操作结果给预期结果
+			 *                     this.expectedModCount = ArrayList.this.modCount;
+			 *                 } catch (IndexOutOfBoundsException var2) {
+			 *                     throw new ConcurrentModificationException();
+			 *                 }
+			 *             }
+			 *         }
+			 *
+			 * 		这是ARRAYLIST类的删除方法
+			 * 		public E remove(int var1) {
+			 *         this.rangeCheck(var1);
+			 *         ++this.modCount;
+			 *         Object var2 = this.elementData(var1);
+			 *         int var3 = this.size - var1 - 1;
+			 *         if (var3 > 0) {
+			 *         	   如果删除的不是最后一个元素，就会复制一个数组出来
+			 *             System.arraycopy(this.elementData, var1 + 1, this.elementData, var1, var3);
+			 *         }
+			 *         然后将数组大小-1
+			 *         this.elementData[--this.size] = null;
+			 *         return var2;
+			 *     }
+			 */
+			iterator.remove();
+		}
+		for (String li : list) {
+			System.out.print(li + ":");
+		}
+
+		System.out.println("===========================================");
+
+		List<String> list1 = new ArrayList<String>();
+		list1.add("123");
+		list1.add("234");
+		list1.add("345");
+		list1.add("456");
+		for (int i = 0; i < list1.size(); i++) {
+			list1.remove(i);
+		}
+		for (String li : list1) {
+			System.out.print(li + ":");
+		}
+		//↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑这是一个关于iterater删除元素原理的验证↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
+	}
 
 }
