@@ -1,14 +1,18 @@
 package com.util;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLSocketFactory;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.PostMethod;
+
+import javax.net.ssl.*;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.SecureRandom;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -21,89 +25,35 @@ import java.util.Map;
  * @date 2018/9/1 10:08
  */
 public class HttpUtil {
-    public static String doPost(String url, String params) throws IOException {
-        URL postUrl = new URL(url);
-        StringBuilder stringBuilder = new StringBuilder();
-        if (postUrl.getProtocol().equals("https")) {
-            HttpsURLConnection connection = (HttpsURLConnection)postUrl.openConnection();
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            PrintWriter out = null;
-            out = new PrintWriter(connection.getOutputStream());
-            out.print(params);
-            out.flush();
-            out.close();
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));
-            String line = "";
+    public static String post(String url, Map<String, Object> params) throws Exception{
+		/*URL getUrl = new URL(url);
+		URLConnection urlConnection = getUrl.openConnection();
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "utf-8"));
 
-            while((line = in.readLine()) != null) {
-                stringBuilder.append(line);
-            }
+		String line;
+		while((line = bufferedReader.readLine()) != null) {
+			System.out.println(line);
+		}
 
-            in.close();
-            connection.disconnect();
-        } else {
-            HttpURLConnection connection = (HttpURLConnection)postUrl.openConnection();
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setRequestMethod("POST");
-            connection.setUseCaches(false);
-            connection.setInstanceFollowRedirects(true);
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            connection.connect();
-            DataOutputStream out = new DataOutputStream(connection.getOutputStream());
-            if (params != null && params.length() > 0) {
-                out.writeBytes(params);
-            }
+		bufferedReader.close();*/
 
-            out.flush();
-            out.close();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));
-            String line = "";
+		//=========================这里用另一种方式==================================================
 
-            while((line = reader.readLine()) != null) {
-                stringBuilder.append(line);
-            }
+		HttpClient httpClient = new HttpClient();
+		PostMethod post = new PostMethod(url);
+		httpClient.executeMethod(post);
 
-            reader.close();
-            connection.disconnect();
-        }
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(post.getResponseBodyAsStream(), "utf-8"));
 
-        return stringBuilder.toString();
-    }
+		String line;
+		while((line = bufferedReader.readLine()) != null) {
+			System.out.println(line);
+		}
 
-    public static String doGet(String url, Map<String, String> params) throws IOException {
-        String content = "";
-        if (params != null && params.size() > 0) {
-            StringBuilder sb = new StringBuilder();
-            Iterator i$ = params.keySet().iterator();
+		bufferedReader.close();
 
-            while(i$.hasNext()) {
-                String key = (String)i$.next();
-                sb.append(key + "=" + URLEncoder.encode((String)params.get(key), "utf-8"));
-                sb.append("&");
-            }
-
-            content = sb.toString();
-        }
-
-        String getURL = trimEnd(url, "?") + content;
-        URL getUrl = new URL(getURL);
-        HttpURLConnection connection = (HttpURLConnection)getUrl.openConnection();
-        connection.connect();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));
-        StringBuilder stringBuilder = new StringBuilder();
-
-        String line;
-        while((line = reader.readLine()) != null) {
-            stringBuilder.append(line);
-        }
-
-        reader.close();
-        connection.disconnect();
-        return stringBuilder.toString();
-    }
+		return "";
+	}
 
     /**
      * 剔除指定字符串及其后字符串
@@ -121,4 +71,10 @@ public class HttpUtil {
             return src.endsWith(trimString) ? src.substring(0, src.lastIndexOf(trimString)) : src;
         }
     }
+
+	public static void main(String[] args) throws Exception{
+		String result = post("https://baike.baidu.com/item/ssl/320778?fr=aladdin", null);
+		System.out.println(result);
+	}
+
 }
