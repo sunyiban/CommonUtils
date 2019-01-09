@@ -1,6 +1,7 @@
 package com.util;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
 
@@ -15,6 +16,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -43,6 +45,10 @@ public class HttpUtil {
 
 		HttpClient httpClient = new HttpClient();
 		PostMethod post = new PostMethod(url);
+		Header header = new Header();
+		header.setName("User-Agent");
+		header.setValue("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
+		post.setRequestHeader(header);
 		httpClient.executeMethod(post);
 
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(post.getResponseBodyAsStream(), "utf-8"));
@@ -171,7 +177,9 @@ public class HttpUtil {
 	}
 
 	public static void main(String[] args) throws Exception{
-		String result = post("https://baike.baidu.com/item/ssl/320778?fr=aladdin", null);
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("inputId", "420115199101022811");
+		String result = post("http://www.matools.com/id", params);
 		System.out.println(result);
 	}
 

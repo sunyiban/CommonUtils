@@ -1,5 +1,7 @@
 package com.util;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -137,6 +139,37 @@ public class DateUtil {
         }
         return 0;
     }
+
+    /**
+     * 字符串转换成日期 默认格式yyyy-MM-dd
+     *
+     * @author sunyiban
+     * @date 2018/11/15 11:50
+     * @param date
+     * @return java.util.Date
+     */
+    public static Date stringToDate(String date) throws Exception {
+		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD);
+    	return sdf.parse(date);
+	}
+
+	/**
+	 * 字符串转换成日期
+	 * 如果不传格式化参数，默认按yyyy-MM-dd格式处理
+	 *
+	 * @author sunyiban
+	 * @date 2018/11/15 15:11
+	 * @param date
+	 * @param format
+	 * @return java.util.Date
+	 */
+	public static Date stringToDate(String date, String format) throws Exception {
+		if (StringUtils.isEmpty(format)) {
+			return stringToDate(date);
+		}
+    	SimpleDateFormat sdf = new SimpleDateFormat(format);
+    	return sdf.parse(date);
+	}
 
 	public static void main(String[] args) {
     	Calendar cal = Calendar.getInstance();

@@ -3,6 +3,8 @@ package com.util;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author sunyiban
@@ -62,6 +64,18 @@ public class CalendarUtil {
 
 		subDate(calendar);
 		System.out.println(sdf.format(calendar.getTime()));
+
+
+		Calendar calendar1 = Calendar.getInstance();
+		calendar1.add(Calendar.DAY_OF_MONTH, 5);
+		calendar1.set(Calendar.HOUR_OF_DAY, 23);
+		calendar1.set(Calendar.MINUTE, 0);
+		calendar1.set(Calendar.SECOND, 0);
+		System.out.println(sdf.format(calendar1.getTime()));
+
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("123", "123");
+		System.out.println("aaa" + ":" + map.get("1234"));
 	}
 
 	private static void subDate(Calendar calendar) {
