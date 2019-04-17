@@ -93,7 +93,6 @@ public class HttpUtil {
 		InputStream inputStream = null;
 		try {
 			// 这是一些测试用的地址，在使用这个方法的时候遇到一个问题，就是读取不到文件流的内容
-//			URL url = new URL("https://file.52touzi.cn/file/show/5b97c40ee4b0d5c4d6a8cab3.png");
 //			URL url = new URL("https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/bd_logo1_31bdc765.png");
 //			URL url = new URL("http://thyrsi.com/t6/369/1536675023x-1566680355.png");
 			URL url = new URL(urlPath);
