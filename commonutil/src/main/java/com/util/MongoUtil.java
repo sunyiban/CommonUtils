@@ -30,12 +30,14 @@ public enum MongoUtil {
 
 	static {
 		System.out.println("===============MongoDBUtil初始化========================");
-		String ip = "192.168.1.109";
-		int port =27017;
+		String ip = "";
+		int port =3717;
 		String username = "p2p_files";
-		String password = "huazhen-+..";
+		String password = "";
 		String database = "files";
-		MongoCredential mongoCredential = MongoCredential.createMongoCRCredential(username, database, password.toCharArray());
+		// 用这个方法可能回报com.mongodb.MongoSecurityException: Exception authenticating
+//		MongoCredential mongoCredential = MongoCredential.createMongoCRCredential(username, database, password.toCharArray());
+		MongoCredential mongoCredential = MongoCredential.createCredential(username, database, password.toCharArray());
 		List<MongoCredential> list = new ArrayList<MongoCredential>();
 		list.add(mongoCredential);
 
@@ -217,11 +219,21 @@ public enum MongoUtil {
 	 */
 	public static void main(String[] args) throws Exception{
 
+//		List<MongoCredential> list = new ArrayList<MongoCredential>();
+//		MongoCredential mongoCredential = MongoCredential.createCredential("p2p_files",
+//				"files", "L1UIYH9oQwuPkS5K7ggX".toCharArray());
+//		list.add(mongoCredential);
+//		MongoClient mongoClient = new MongoClient(new ServerAddress("10.5.0.199"), list);
+//		System.out.println(mongoClient.listDatabaseNames());
+
 		String dbName = "files";
 		String collName = "fs.files";
 		MongoCollection<Document> coll = MongoUtil.instance.getCollection(dbName, collName);
-		Date from = DateUtil.stringToDate("2018-08-01");
-		Date to = DateUtil.stringToDate("2018-09-01");
+//		MongoCollection<Document> coll = mongoClient.getDatabase("files").getCollection(collName);
+//		Date from = DateUtil.stringToDate("2015-08-01");
+//		Date to = DateUtil.stringToDate("2019-01-14 00:00:00", "yyyy-MM-dd HH:mm:ss");
+		Date from = DateUtil.stringToDate("2019-02-15 00:00:00");
+		Date to = DateUtil.stringToDate("2019-02-19 23:59:59", "yyyy-MM-dd HH:mm:ss");
 		FindIterable<Document> it = coll.find(Filters.and(Filters.gt("uploadDate", from), Filters.lte("uploadDate", to)));
 		MongoCursor<Document> cur = it.iterator();
 
@@ -231,32 +243,44 @@ public enum MongoUtil {
 		String suffix = "";
 		String contentType ;
 		Document doc;
+
+		StringBuffer missSb = new StringBuffer("");
 		while(cur.hasNext()) {
 			doc = cur.next();
 			System.out.println(doc);
-//			contentType = (String) doc.get("contentType");
-//			if ("application/pdf".equals(contentType)) {
-//				suffix = "pdf";
-//			} else if ("jpeg".equals(contentType)) {
-//				suffix = "jpeg";
-//			} else if ("img".equals(contentType)) {
-//				suffix = "jpg";
-//			} else {
-//				try {
-//					suffix = ((String) doc.get("filename")).split("\\.")[1];
-//				} catch (Exception e) {
-//					System.out.println(doc);
-//					continue;
-//				}
-//			}
-//
+			contentType = (String) doc.get("contentType");
+			if ("application/pdf".equals(contentType)) {
+				suffix = "pdf";
+			} else if ("jpeg".equals(contentType)) {
+				suffix = "jpeg";
+			} else if ("img".equals(contentType)) {
+				suffix = "jpg";
+			} else {
+				try {
+					suffix = ((String) doc.get("filename")).split("\\.")[1];
+				} catch (Exception e) {
+					missSb.append(doc + "\n");
+					continue;
+				}
+			}
+
 //			sb.append("http://service-file.hzfh.test/service-file/file/show/              " + doc.get("_id") + "." + suffix +"\n");
+			sb.append("https://file.52touzi.cn/file/show/              " + doc.get("_id") + "." + suffix +"\n");
 
 		}
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
-		bw.write(sb.toString());
-		bw.flush();
-		bw.close();
+
+		System.out.println("missSB" + missSb.toString());
+//		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
+//		bw.write(sb.toString());
+//		bw.flush();
+//		bw.close();
+
+		File files = new File("e:/mongo3.list");
+		BufferedWriter bw1 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(files)));
+		bw1.write(sb.toString());
+		bw1.flush();
+		bw1.close();
+
 
 		//coll.createIndex(new Document("validata",1));//创建索引
 		//coll.createIndex(new Document("id",1));
