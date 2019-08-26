@@ -1,7 +1,6 @@
 package com.util;
 
-import com.platform.utils.RRException;
-import com.platform.utils.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -76,7 +75,7 @@ public class ExcelExport {
      */
     public ExcelExport(String exportFileName) {
 
-        if (StringUtils.isNullOrEmpty(exportFileName)) {
+        if (StringUtils.isEmpty(exportFileName)) {
             exportFileName = "workbook.xlsx";
         }
 
@@ -205,7 +204,7 @@ public class ExcelExport {
         // 创建表单
         Sheet sheet;
 
-        if (StringUtils.isNullOrEmpty(sheetName)) {
+        if (StringUtils.isEmpty(sheetName)) {
             sheet = workBook.createSheet();
         } else {
             sheet = workBook.createSheet(sheetName);
@@ -243,7 +242,7 @@ public class ExcelExport {
         // 创建表单
         Sheet sheet;
 
-        if (StringUtils.isNullOrEmpty(sheetName)) {
+        if (StringUtils.isEmpty(sheetName)) {
             sheet = workBook.createSheet();
         } else {
             sheet = workBook.createSheet(sheetName);
