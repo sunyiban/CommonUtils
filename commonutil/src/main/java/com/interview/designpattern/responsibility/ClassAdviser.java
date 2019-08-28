@@ -1,4 +1,4 @@
-package com.interview.designpattern.Responsibility;
+package com.interview.designpattern.responsibility;
 
 /**
  * @autor sunyiban
