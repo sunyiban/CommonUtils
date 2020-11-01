@@ -40,15 +40,17 @@ public class PdfUtils {
      */
     private static byte[] mergePdfFiles(List<InputStream> inputStreams) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        Document document = new Document();// 创建一个新的PDF
+        // 创建一个新的PDF
+        Document document = new Document();
         byte[] pdfs = new byte[0];
         try {
             PdfCopy copy = new PdfCopy(document, bos);
             document.open();
-            for (InputStream is : inputStreams) {// 取出单个PDF的数据
+            // 取出单个PDF的数据
+            for (InputStream is : inputStreams) {
                 PdfReader reader = new PdfReader(InputStream2byte(is));
                 int pageTotal= reader.getNumberOfPages();
-//                logger.info("pdf的页码数是 ==> {}",pageTotal);
+                System.out.println("pdf的页码数是 ==> " + pageTotal);
                 for (int pageNo=1;pageNo<=pageTotal;pageNo++){
                     document.newPage();
                     PdfImportedPage page = copy.getImportedPage(reader, pageNo);
