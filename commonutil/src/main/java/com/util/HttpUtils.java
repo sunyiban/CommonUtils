@@ -1,6 +1,5 @@
 package com.util;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
@@ -23,6 +22,7 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContexts;
 import org.apache.http.util.EntityUtils;
+import org.springframework.util.StringUtils;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -312,7 +312,7 @@ public class HttpUtils {
 	 * @return 拼接后的字符串
 	 */
 	public static String urlWithForm(String url, String queryString) {
-		if (StringUtils.isBlank(queryString)) {
+		if (StringUtils.isEmpty(queryString)) {
 			return url;
 		}
 		if (url.contains("?")) {
@@ -345,7 +345,7 @@ public class HttpUtils {
 	 */
 	public static String toParams(Map<String, String> paramMap) {
 		if (paramMap == null) {
-			return StringUtils.EMPTY;
+			return "";
 		}
 		StringBuilder sb = new StringBuilder();
 		boolean isFirst = true;
@@ -379,7 +379,7 @@ public class HttpUtils {
 	 * @return 编码后的字符
 	 */
 	public static String encode(String content, String charsetStr) {
-		if (StringUtils.isBlank(content)) {
+		if (StringUtils.isEmpty(content)) {
 			return content;
 		}
 		String encodeContent = null;
